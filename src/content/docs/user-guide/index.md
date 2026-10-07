@@ -24,5 +24,4 @@ Use the button and screen names exactly as they appear in the app, in **bold**.
 
 ## Result
 
-Describe what the reader should see when the task is done, and link to the next page, such as
-[Get started with CAPS](/user-guide/getting-started/).
+Describe what the reader should see when the task is done, and link to the next page.

@@ -4,11 +4,9 @@ import { tabs } from './src/tabs';
 
 // https://astro.build/config
 export default defineConfig({
-	// TODO: set when hosting is decided — enables the sitemap and fixes links.
-	// GitHub Pages example (repo hisptz/caps-doc → https://hisptz.github.io/caps-doc/):
-	// site: 'https://hisptz.github.io',
-	// base: '/caps-doc',
-	// With a custom domain instead, set only `site` (e.g. 'https://docs.example.org') and drop `base`.
+	// Hosted on GitHub Pages: https://hisptz.github.io/caps-doc/
+	site: 'https://hisptz.github.io',
+	base: '/caps-doc',
 	integrations: [
 		starlight({
 			title: 'CAPS',

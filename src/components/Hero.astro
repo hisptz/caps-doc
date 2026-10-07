@@ -5,6 +5,8 @@ import icon from '../assets/caps-icon.png';
 
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline, actions = [] } = data.hero || {};
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const withBase = (link: string) => (link.startsWith('/') ? base + link : link);
 ---
 
 <header class="banner">
@@ -21,7 +23,7 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 					<div class="actions">
 						{actions.map(({ link, text, variant, icon }) => (
 							<LinkButton
-								href={link}
+								href={withBase(link)}
 								variant={variant}
 								icon={icon?.name}
 								class={variant === 'minimal' ? 'btn-ghost' : 'btn-solid'}
