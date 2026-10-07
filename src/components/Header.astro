@@ -1,0 +1,197 @@
+---
+// Two-row brand header: title, theme toggle, search and repo links on top; section tabs below.
+import Search from '@astrojs/starlight/components/Search.astro';
+import SiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
+import SocialIcons from './SocialIcons.astro';
+import { Icon } from '@astrojs/starlight/components';
+import { tabs, activeTab } from '../tabs';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
+---
+
+<div class="caps-header">
+	<div class="top-row">
+		<div class="title-wrapper">
+			<SiteTitle />
+		</div>
+		<div class="tools">
+			<button type="button" class="theme-toggle print:hidden" aria-label="Switch light/dark theme" title="Switch light/dark theme">
+				<Icon name="sun" class="icon-sun" size="1.25rem" />
+				<Icon name="moon" class="icon-moon" size="1.25rem" />
+			</button>
+			<div class="search print:hidden"><Search /></div>
+			<div class="repos sl-hidden md:sl-flex print:hidden"><SocialIcons /></div>
+		</div>
+	</div>
+	<nav class="tabs print:hidden" aria-label="Sections">
+		{
+			tabs.map((tab) => (
+				<a
+					href={base + tab.href}
+					class:list={{ active: tab.id === current }}
+					aria-current={tab.id === current ? 'page' : undefined}
+				>
+					{tab.label}
+				</a>
+			))
+		}
+	</nav>
+</div>
+
+<script>
+	// Flip between light and dark, using the same storage key as Starlight's own theme picker.
+	const key = 'starlight-theme';
+	document.querySelectorAll<HTMLButtonElement>('.theme-toggle').forEach((btn) =>
+		btn.addEventListener('click', () => {
+			const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+			document.documentElement.dataset.theme = next;
+			try {
+				localStorage.setItem(key, next);
+			} catch {}
+			// Keep the picker in the mobile menu in sync.
+			document.querySelectorAll<HTMLSelectElement>('starlight-theme-select select').forEach((s) => {
+				s.value = next;
+			});
+		})
+	);
+</script>
+
+<style>
+	.caps-header {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		color: #fff;
+	}
+	.top-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		height: var(--caps-top-row);
+		padding-inline: var(--sl-nav-pad-x);
+	}
+	.title-wrapper {
+		min-width: 0;
+		overflow: clip;
+		padding: 3px;
+	}
+	/* Leave room for Starlight's mobile menu button, which sits at the right of the top row. */
+	@media (max-width: 49.99rem) {
+		:global([data-has-sidebar]) .top-row {
+			padding-inline-end: calc(var(--sl-nav-pad-x) + var(--sl-menu-button-size) + 0.5rem);
+		}
+	}
+	.title-wrapper :global(.site-title) {
+		color: #fff;
+	}
+	.title-wrapper :global(.site-title img) {
+		height: 2.25rem;
+		border-radius: 0.5rem;
+		box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
+	}
+	.tools {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex: 1;
+		justify-content: flex-end;
+		min-width: 0;
+	}
+
+	/* Theme toggle */
+	.theme-toggle {
+		display: flex;
+		padding: 0.4rem;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		color: #fff;
+		cursor: pointer;
+	}
+	.theme-toggle:hover {
+		background: rgb(255 255 255 / 0.15);
+	}
+	:global([data-theme='light']) .theme-toggle :global(.icon-sun),
+	:global([data-theme='dark']) .theme-toggle :global(.icon-moon) {
+		display: none;
+	}
+
+	/* Search box on the red bar */
+	.search {
+		display: flex;
+	}
+	.search :global(button[data-open-modal]) {
+		color: #fff;
+	}
+	@media (min-width: 50rem) {
+		.search {
+			flex: 0 1 20rem;
+		}
+		.search :global(site-search) {
+			width: 100%;
+		}
+		.search :global(button[data-open-modal]) {
+			max-width: none;
+			border: 0;
+			background: rgb(0 0 0 / 0.18);
+			color: rgb(255 255 255 / 0.85);
+		}
+		.search :global(button[data-open-modal]:hover) {
+			background: rgb(0 0 0 / 0.26);
+			color: #fff;
+		}
+		/* Shortcut hint: one box around "Ctrl K"; the inner keys stay transparent. */
+		.search :global(button[data-open-modal] > kbd) {
+			background: rgb(255 255 255 / 0.15);
+			color: #fff;
+		}
+		.search :global(button[data-open-modal] > kbd kbd) {
+			background: transparent;
+			color: inherit;
+		}
+	}
+
+	/* Repo links */
+	.repos {
+		gap: 1rem;
+		align-items: center;
+	}
+	.repos :global(.repo-link) {
+		color: #fff;
+	}
+	.repos :global(.repo-link:hover) {
+		color: #fff;
+		opacity: 0.8;
+	}
+
+	/* Section tabs */
+	.tabs {
+		display: flex;
+		gap: 0.25rem;
+		height: var(--caps-tabs-row);
+		padding-inline: calc(var(--sl-nav-pad-x) - 0.75rem);
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+	.tabs a {
+		display: flex;
+		align-items: center;
+		padding-inline: 0.75rem;
+		border-bottom: 2px solid transparent;
+		color: rgb(255 255 255 / 0.75);
+		font-size: var(--sl-text-sm);
+		font-weight: 500;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.tabs a:hover {
+		color: #fff;
+	}
+	.tabs a.active {
+		color: #fff;
+		font-weight: 700;
+		border-bottom-color: #fff;
+	}
+</style>

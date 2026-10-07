@@ -1,0 +1,37 @@
+---
+// Labelled repo links in the header, instead of two identical GitHub icons.
+import config from 'virtual:starlight/user-config';
+import { Icon } from '@astrojs/starlight/components';
+
+const links = config.social || [];
+---
+
+{
+	links.map(({ label, href, icon }) => (
+		<a href={href} class="repo-link sl-flex" title={`${label} on GitHub`}>
+			<Icon name={icon} size="1.1rem" />
+			<span>{label}</span>
+		</a>
+	))
+}
+
+<style>
+	.repo-link {
+		align-items: center;
+		gap: 0.4rem;
+		font-size: var(--sl-text-sm);
+		font-weight: 600;
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.repo-link:hover {
+		color: var(--sl-color-accent);
+	}
+	/* Icon only on narrow headers. */
+	@media (max-width: 72rem) {
+		.repo-link span {
+			display: none;
+		}
+	}
+</style>

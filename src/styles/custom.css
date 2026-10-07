@@ -1,0 +1,84 @@
+/* CAPS brand: red from the CAPS app icon (#c13c3b). */
+
+/* Dark theme */
+:root {
+	--caps-red: #c13c3b;
+	--sl-color-accent-low: #3b1514;
+	--sl-color-accent: #e0625f;
+	--sl-color-accent-high: #f6c9c7;
+}
+
+/* Light theme */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #fbe3e2;
+	--sl-color-accent: #c13c3b;
+	--sl-color-accent-high: #7a2221;
+}
+
+/* Header: plain bold title like the HISP docs, not accent-coloured. */
+.site-title {
+	color: var(--sl-color-white);
+	font-weight: 700;
+}
+
+/* Full-width banner on the homepage can be wider than the page column. */
+body {
+	overflow-x: clip;
+}
+
+/* Centre the documentation column between the sidebars, with one shared title/body gutter. */
+:root[data-has-sidebar] {
+	--sl-content-pad-x: clamp(1rem, 2.5vw, 2rem);
+	--caps-toc-width: 20rem;
+	--sl-content-width: 58rem;
+}
+@media (min-width: 72rem) {
+	:root[data-has-sidebar] .main-pane {
+		--sl-content-margin-inline: auto;
+		flex: 1 1 0;
+		width: auto;
+		min-width: 0;
+	}
+	:root[data-has-sidebar] .right-sidebar-container {
+		flex: 0 0 var(--caps-toc-width);
+		width: var(--caps-toc-width);
+	}
+	:root[data-has-sidebar] .right-sidebar {
+		width: var(--caps-toc-width);
+	}
+	:root[data-has-sidebar] .right-sidebar-panel .sl-container {
+		width: auto;
+		max-width: none;
+	}
+}
+
+/* ---------- Two-row brand header (see src/components/Header.astro) ---------- */
+:root {
+	--caps-top-row: 3.5rem;
+	--caps-tabs-row: 2.75rem;
+	--sl-nav-height: calc(var(--caps-top-row) + var(--caps-tabs-row));
+	--caps-header-bg: var(--caps-red);
+}
+:root[data-theme='dark'] {
+	--caps-header-bg: #9e2f2e;
+}
+@media (min-width: 50rem) {
+	:root {
+		--caps-top-row: 4rem;
+	}
+}
+.page > header.header {
+	padding: 0;
+	border-bottom: 0;
+	background-color: var(--caps-header-bg);
+	box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+}
+/* Mobile menu button: centre it in the top row and make it white. */
+.sl-menu-button {
+	top: calc((var(--caps-top-row) - var(--sl-menu-button-size)) / 2) !important;
+}
+.sl-menu-button {
+	background: transparent !important;
+	color: #fff !important;
+	box-shadow: none !important;
+}

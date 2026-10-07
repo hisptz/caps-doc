@@ -1,0 +1,83 @@
+---
+// Centered feature row with large icons for the homepage.
+import { Icon } from '@astrojs/starlight/components';
+
+const features = [
+	{
+		icon: 'list-format',
+		title: 'Configurable pipelines',
+		text: 'Choose the tasks that gather climate data, generate disease predictions, and bring results into DHIS2.',
+	},
+	{
+		icon: 'clock',
+		title: 'Scheduled or on demand',
+		text: 'Set work to run automatically, start it yourself, or adjust settings for a single run.',
+	},
+	{
+		icon: 'analytics',
+		title: 'Full visibility',
+		text: 'Follow progress step by step, review errors, and retry work that needs attention.',
+	},
+	{
+		icon: 'puzzle',
+		title: 'Built into DHIS2',
+		text: 'Open CAPS from DHIS2 and use your existing account. No extra login needed.',
+	},
+] as const;
+---
+
+<section class="features not-content">
+	<h2>What CAPS does</h2>
+	<p class="intro">
+		Keep climate data up to date and bring disease predictions into DHIS2, automatically.
+	</p>
+	<div class="grid">
+		{
+			features.map((f) => (
+				<div class="feature">
+					<Icon name={f.icon} size="3rem" class="icon" />
+					<h3>{f.title}</h3>
+					<p>{f.text}</p>
+				</div>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.features {
+		padding-block: 2.5rem 1rem;
+		text-align: center;
+	}
+	h2 {
+		font-size: var(--sl-text-h2);
+		font-weight: 700;
+		color: var(--sl-color-white);
+	}
+	.intro {
+		margin: 0.5rem auto 0;
+		max-width: 40rem;
+		color: var(--sl-color-gray-2);
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+		gap: 2rem;
+		margin-top: 2.5rem;
+	}
+	.feature :global(.icon) {
+		margin-inline: auto;
+		color: var(--sl-color-accent);
+	}
+	h3 {
+		margin-top: 1rem;
+		font-size: var(--sl-text-h5);
+		font-weight: 700;
+		color: var(--sl-color-white);
+	}
+	.feature p {
+		margin-top: 0.5rem;
+		color: var(--sl-color-gray-2);
+		line-height: 1.6;
+	}
+</style>

@@ -1,0 +1,105 @@
+---
+// Starlight's footer, plus link columns and copyright on the homepage.
+import Default from '@astrojs/starlight/components/Footer.astro';
+
+const isHome = Astro.locals.starlightRoute.entry.data.template === 'splash';
+const year = new Date().getFullYear();
+
+const columns = [
+	{
+		title: 'Guides',
+		links: [
+			{ label: 'User Guide', href: '/user-guide/' },
+			{ label: 'Deployment Guide', href: '/deployment-guide/' },
+			{ label: 'Development Guide', href: '/development-guide/' },
+		],
+	},
+	{
+		title: 'Source',
+		links: [
+			{ label: 'caps-engine on GitHub', href: 'https://github.com/hisptz/caps-engine' },
+			{ label: 'caps-app on GitHub', href: 'https://github.com/hisptz/caps-app' },
+		],
+	},
+	{
+		title: 'More',
+		links: [
+			{ label: 'CHAP', href: 'https://github.com/dhis2-chap/chap-core' },
+			{ label: 'HISP Tanzania', href: 'https://hisp.tz' },
+			{ label: 'DHIS2', href: 'https://dhis2.org' },
+		],
+	},
+];
+---
+
+{
+	isHome ? (
+		<footer class="site-footer not-content">
+			<div class="cols">
+				{columns.map((col) => (
+					<div>
+						<h4>{col.title}</h4>
+						<ul>
+							{col.links.map((l) => (
+								<li>
+									<a href={l.href}>{l.label}</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))}
+			</div>
+			<p class="copy">Copyright © {year} HISP Tanzania. Released under the BSD 3-Clause License.</p>
+		</footer>
+	) : (
+		<Default />
+	)
+}
+
+<style>
+	.site-footer {
+		width: 100vw;
+		margin-inline: calc(50% - 50vw);
+		margin-top: 3rem;
+		margin-bottom: -1.5rem;
+		padding: 3rem 1.5rem 2rem;
+		background: var(--sl-color-gray-6);
+		border-top: 1px solid var(--sl-color-hairline);
+	}
+	.cols {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+		gap: 2rem;
+		max-width: 60rem;
+		margin-inline: auto;
+	}
+	h4 {
+		font-size: var(--sl-text-sm);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--sl-color-white);
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+		margin-top: 0.75rem;
+	}
+	li + li {
+		margin-top: 0.5rem;
+	}
+	a {
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+	}
+	a:hover {
+		color: var(--sl-color-accent);
+	}
+	.copy {
+		max-width: 60rem;
+		margin: 2.5rem auto 0;
+		text-align: center;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+</style>
