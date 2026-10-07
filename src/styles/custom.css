@@ -57,10 +57,13 @@ body {
 	--caps-top-row: 3.5rem;
 	--caps-tabs-row: 2.75rem;
 	--sl-nav-height: calc(var(--caps-top-row) + var(--caps-tabs-row));
-	--caps-header-bg: var(--caps-red);
+	--caps-header-bg: #fff;
+	--caps-header-fg: var(--sl-color-white);
+	--caps-header-fg-muted: var(--sl-color-gray-3);
+	--caps-header-hover: var(--sl-color-gray-6);
 }
 :root[data-theme='dark'] {
-	--caps-header-bg: #9e2f2e;
+	--caps-header-bg: var(--sl-color-bg-nav);
 }
 @media (min-width: 50rem) {
 	:root {
@@ -69,16 +72,15 @@ body {
 }
 .page > header.header {
 	padding: 0;
-	border-bottom: 0;
+	border-bottom: 1px solid var(--sl-color-hairline-shade);
 	background-color: var(--caps-header-bg);
-	box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
 }
-/* Mobile menu button: centre it in the top row and make it white. */
+/* Mobile menu button: centre it in the top row and match the header text. */
 .sl-menu-button {
 	top: calc((var(--caps-top-row) - var(--sl-menu-button-size)) / 2) !important;
 }
 .sl-menu-button {
 	background: transparent !important;
-	color: #fff !important;
+	color: var(--caps-header-fg) !important;
 	box-shadow: none !important;
 }

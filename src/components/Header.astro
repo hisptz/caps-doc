@@ -1,5 +1,5 @@
 ---
-// Two-row brand header: title, theme toggle, search and repo links on top; section tabs below.
+// Two-row header: title, theme toggle, search and repo links on top; section tabs below.
 import Search from '@astrojs/starlight/components/Search.astro';
 import SiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
 import SocialIcons from './SocialIcons.astro';
@@ -62,7 +62,7 @@ const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		color: #fff;
+		color: var(--caps-header-fg);
 	}
 	.top-row {
 		display: flex;
@@ -84,12 +84,11 @@ const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
 		}
 	}
 	.title-wrapper :global(.site-title) {
-		color: #fff;
+		color: var(--caps-header-fg);
 	}
 	.title-wrapper :global(.site-title img) {
 		height: 2.25rem;
 		border-radius: 0.5rem;
-		box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
 	}
 	.tools {
 		display: flex;
@@ -107,23 +106,20 @@ const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
 		border: 0;
 		border-radius: 50%;
 		background: transparent;
-		color: #fff;
+		color: var(--caps-header-fg);
 		cursor: pointer;
 	}
 	.theme-toggle:hover {
-		background: rgb(255 255 255 / 0.15);
+		background: var(--caps-header-hover);
 	}
 	:global([data-theme='light']) .theme-toggle :global(.icon-sun),
 	:global([data-theme='dark']) .theme-toggle :global(.icon-moon) {
 		display: none;
 	}
 
-	/* Search box on the red bar */
+	/* Search box */
 	.search {
 		display: flex;
-	}
-	.search :global(button[data-open-modal]) {
-		color: #fff;
 	}
 	@media (min-width: 50rem) {
 		.search {
@@ -134,22 +130,6 @@ const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
 		}
 		.search :global(button[data-open-modal]) {
 			max-width: none;
-			border: 0;
-			background: rgb(0 0 0 / 0.18);
-			color: rgb(255 255 255 / 0.85);
-		}
-		.search :global(button[data-open-modal]:hover) {
-			background: rgb(0 0 0 / 0.26);
-			color: #fff;
-		}
-		/* Shortcut hint: one box around "Ctrl K"; the inner keys stay transparent. */
-		.search :global(button[data-open-modal] > kbd) {
-			background: rgb(255 255 255 / 0.15);
-			color: #fff;
-		}
-		.search :global(button[data-open-modal] > kbd kbd) {
-			background: transparent;
-			color: inherit;
 		}
 	}
 
@@ -159,11 +139,10 @@ const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
 		align-items: center;
 	}
 	.repos :global(.repo-link) {
-		color: #fff;
+		color: var(--caps-header-fg-muted);
 	}
 	.repos :global(.repo-link:hover) {
-		color: #fff;
-		opacity: 0.8;
+		color: var(--caps-header-fg);
 	}
 
 	/* Section tabs */
@@ -180,18 +159,18 @@ const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
 		align-items: center;
 		padding-inline: 0.75rem;
 		border-bottom: 2px solid transparent;
-		color: rgb(255 255 255 / 0.75);
+		color: var(--caps-header-fg-muted);
 		font-size: var(--sl-text-sm);
 		font-weight: 500;
 		text-decoration: none;
 		white-space: nowrap;
 	}
 	.tabs a:hover {
-		color: #fff;
+		color: var(--caps-header-fg);
 	}
 	.tabs a.active {
-		color: #fff;
+		color: var(--sl-color-accent);
 		font-weight: 700;
-		border-bottom-color: #fff;
+		border-bottom-color: var(--sl-color-accent);
 	}
 </style>
