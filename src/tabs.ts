@@ -1,30 +1,26 @@
 export const tabs = [
-	{
-		id: 'home', label: 'Home', href: '/',
-		pages: [{ slug: 'index', label: 'Welcome to CAPS' }],
-	},
-	{
-		id: 'user', label: 'User Guide', href: '/user-guide/',
-		pages: [
-			{ slug: 'user-guide', label: 'About this guide' },
-		],
-	},
-	{
-		id: 'deployment', label: 'Deployment Guide', href: '/deployment-guide/',
-		pages: [
-			{ slug: 'deployment-guide', label: 'Set up CAPS' },
-		],
-	},
-	{
-		id: 'development', label: 'Development Guide', href: '/development-guide/',
-		pages: [
-			{ slug: 'development-guide', label: 'Start developing' },
-		],
-	},
+	{ id: 'home', label: 'Home', directory: '' },
+	{ id: 'user', label: 'User Guide', directory: 'user-guide' },
+	{ id: 'deployment', label: 'Deployment Guide', directory: 'deployment-guide' },
+	{ id: 'development', label: 'Development Guide', directory: 'development-guide' },
 ] as const;
+
+export type Tab = (typeof tabs)[number];
+
+/** Link to a tab's landing page, without the site base. */
+export function tabHref(tab: Tab): string {
+	return tab.directory ? `/${tab.directory}/` : '/';
+}
+
+/** Sidebar group for a tab: Home holds the landing page, other tabs list their folder. */
+export function tabSidebar(tab: Tab) {
+	return tab.directory
+		? { label: tab.label, items: [{ autogenerate: { directory: tab.directory } }] }
+		: { label: tab.label, items: ['index'] };
+}
 
 /** Which tab a path (without the site base) belongs to. */
 export function activeTab(path: string): string {
-	const slug = path.replace(/^\/+|\/+$/g, '') || 'index';
-	return tabs.find((tab) => tab.pages.some((page) => page.slug === slug))?.id ?? 'home';
+	const folder = path.replace(/^\/+/, '').split('/')[0];
+	return tabs.find((tab) => tab.directory && tab.directory === folder)?.id ?? 'home';
 }

@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import { tabs } from './src/tabs';
+import { tabs, tabSidebar } from './src/tabs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -25,7 +25,7 @@ export default defineConfig({
 				{ icon: 'github', label: 'caps-engine', href: 'https://github.com/hisptz/caps-engine' },
 				{ icon: 'github', label: 'caps-app', href: 'https://github.com/hisptz/caps-app' },
 			],
-			sidebar: tabs.map((tab) => ({ label: tab.label, items: [...tab.pages] })),
+			sidebar: tabs.map(tabSidebar),
 		}),
 	],
 });

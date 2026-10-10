@@ -1,6 +1,9 @@
 ---
 title: User Guide
 description: Learn how to use CAPS in DHIS2, from your first run to everyday monitoring.
+sidebar:
+  label: About this guide
+  order: 0
 ---
 
 This page is a sample. Copy its layout when you write a page in this guide.

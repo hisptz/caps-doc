@@ -4,7 +4,7 @@ import Search from '@astrojs/starlight/components/Search.astro';
 import SiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
 import SocialIcons from './SocialIcons.astro';
 import { Icon } from '@astrojs/starlight/components';
-import { tabs, activeTab } from '../tabs';
+import { tabs, activeTab, tabHref } from '../tabs';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
@@ -28,7 +28,7 @@ const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
 		{
 			tabs.map((tab) => (
 				<a
-					href={base + tab.href}
+					href={base + tabHref(tab)}
 					class:list={{ active: tab.id === current }}
 					aria-current={tab.id === current ? 'page' : undefined}
 				>
