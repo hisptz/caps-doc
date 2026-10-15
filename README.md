@@ -9,7 +9,7 @@ Pages live in `src/content/docs/` as Markdown (`.md`) or MDX (`.mdx`):
 - `deployment-guide/` — administrator setup and handover guide
 - `development-guide/` — developer starting point
 
-`src/tabs.ts` defines the header tabs. `src/sidebar.ts` builds each guide sidebar from that guide’s folder, including new directories.
+A folder with an index page directly under `src/content/docs/` becomes a header tab. A folder inside a guide becomes a sidebar group. `src/tabs.ts` and `src/sidebar.ts` read those folders, so a new directory shows up without a menu edit.
 
 | Command        | Action                                     |
 | :------------- | :----------------------------------------- |

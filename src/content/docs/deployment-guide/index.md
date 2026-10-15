@@ -3,7 +3,7 @@ title: Set up CAPS
 description: Install the CAPS engine and the DHIS2 app, then connect them.
 sidebar:
   label: Set up CAPS
-  order: 0
+  order: 2
 ---
 
 This guide is for a DHIS2 implementer or server administrator who can run Docker, edit an environment file, and install a DHIS2 app. It installs CAPS and hands the system over. Creating a pipeline, scheduling it, and reading an execution are in the [User Guide](/user-guide/). Changing the engine or the app is in the [Development Guide](/development-guide/).

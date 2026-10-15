@@ -4,10 +4,11 @@ import Search from '@astrojs/starlight/components/Search.astro';
 import SiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
 import SocialIcons from './SocialIcons.astro';
 import { Icon } from '@astrojs/starlight/components';
-import { tabs, activeTab, tabHref } from '../tabs';
+import { getTabs, activeTab, tabHref } from '../tabs';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
+const sectionTabs = getTabs();
 ---
 
 <div class="caps-header">
@@ -26,7 +27,7 @@ const current = activeTab(Astro.url.pathname.slice(base.length) || '/');
 	</div>
 	<nav class="tabs print:hidden" aria-label="Sections">
 		{
-			tabs.map((tab) => (
+			sectionTabs.map((tab) => (
 				<a
 					href={base + tabHref(tab)}
 					class:list={{ active: tab.id === current }}

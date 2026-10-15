@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import mermaid from 'astro-mermaid';
-import { tabs } from './src/tabs';
+import { getTabs } from './src/tabs';
 import { tabSidebar } from './src/sidebar';
 
 // https://astro.build/config
@@ -28,7 +28,7 @@ export default defineConfig({
 				{ icon: 'github', label: 'caps-engine', href: 'https://github.com/hisptz/caps-engine' },
 				{ icon: 'github', label: 'caps-app', href: 'https://github.com/hisptz/caps-app' },
 			],
-			sidebar: tabs.map(tabSidebar),
+			sidebar: getTabs().map(tabSidebar),
 		}),
 	],
 });

@@ -41,7 +41,7 @@ App changes keep `HashRouter`, send CAPS HTTP only through `src/capsApi`, put st
 
 ## This documentation site
 
-Edit `src/content/docs/`. Preview with `pnpm dev` at `http://localhost:4321`. A new folder there becomes a sidebar group. When a command or label changes in caps-engine or caps-app, update the matching page in the same change.
+Edit `src/content/docs/`. Preview with `pnpm dev` at `http://localhost:4321`. A new folder with an index page directly under that directory becomes a header tab. A folder inside a guide becomes a sidebar group. When a command or label changes in caps-engine or caps-app, update the matching page in the same change.
 
 ## Check
 

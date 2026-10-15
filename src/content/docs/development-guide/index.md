@@ -3,7 +3,7 @@ title: Development Guide
 description: Run CAPS locally, find the code that owns a change, and open a pull request.
 sidebar:
   label: Start developing
-  order: 0
+  order: 3
 ---
 
 This guide is for someone who will change caps-engine, caps-app, or both. You can use a terminal, Git, and Docker. Installing CAPS for a server is the [Deployment Guide](/deployment-guide/). Running pipelines day to day is the [User Guide](/user-guide/).
