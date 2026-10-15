@@ -78,12 +78,12 @@ Published pages live in `src/content/docs/development-guide/`. The sidebar is au
 title: Run the engine locally
 description: Start Postgres and RabbitMQ, then reload the API on the host.
 sidebar:
-  label: Engine
-  order: 2
+  label: Run the engine
+  order: 1
 ---
 ```
 
-Internal links omit the site base (`/development-guide/engine/`). The site `base` is `/caps-doc`.
+The Engine group label comes from `engine/index.md`. Internal links omit the site base (`/development-guide/engine/`). The site `base` is `/caps-doc`. The directory layout is in the structure plan.
 
 ## What the landing page should do
 
@@ -91,7 +91,7 @@ Replace the stub note on `development-guide/index.md` with:
 
 - Who the guide is for.
 - The two application repositories and the docs site.
-- The path through the sidebar: local engine, local app, code map, a handler change, tests, a pull request.
+- Two next steps, in order: **Run the engine**, then **Run the app**. Each group then has that repo’s source architecture and its tests. Pipeline steps and pull requests come after both.
 - A pointer to the Deployment Guide for anyone who arrived here wanting a server install.
 
-No install novel on the landing page. The first command belongs on the engine page.
+No commands on the landing page. The clone and the dev scripts start on the two setup pages.

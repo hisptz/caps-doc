@@ -10,7 +10,7 @@ Starlight code blocks already have a copy button. Give every snippet a `title`.
 
 | Former shot | Why it drops | Use this instead |
 | --- | --- | --- |
-| Dev server at `localhost:3000` | The address is the whole point | The start command and the URL as text, on `app.md` |
+| Dev server at `localhost:3000` | The address is the whole point | The start command and the URL as text, on `app/index.md` |
 | **Welcome to CAPS** with a filled URL | The deployment guide already specifies the field and the stored Route | The local value to type, plus a link to the deployment Route snippet |
 | Address bar with `/#/pipelines` | A picture of a hash is harder to copy than the URL | The hash URL in a `text` block |
 | One handler form | The contributor needs the files to edit, not a photo of the fields | The handler skeleton on `handlers.md` |
@@ -34,7 +34,7 @@ Write them as fenced `mermaid` blocks. Use the same renderer the deployment page
 
 ### 1. What is running on the laptop
 
-Page: `engine.md`. This is the picture that stops a second scheduler.
+Page: `engine/index.md`. This is the picture that stops a second scheduler.
 
 ```mermaid
 flowchart LR
@@ -58,7 +58,7 @@ Say under it: stop the Compose `api`, `worker-1`, `worker-2`, and `scheduler` be
 
 ### 2. Where a change lands
 
-Page: `map.md`.
+Page: the guide `index.md`. No commands on that page. Each repo’s own source diagram and path table live on `engine/architecture.md` and `app/architecture.md`.
 
 ```mermaid
 flowchart LR
@@ -71,7 +71,52 @@ flowchart LR
   worker --> step[Step handler]
 ```
 
-Under the figure, the path tables already in the structure plan. The diagram answers “which box do I open?”. The table answers “which file?”.
+The diagram answers “which product do I open?”. Each source-architecture page answers “which folder?”.
+
+### 2a. Engine source
+
+Page: `engine/architecture.md`. Folders, not servers.
+
+```mermaid
+flowchart TB
+  subgraph api [src/services/api]
+    modules[Elysia modules]
+  end
+  subgraph worker [src/services/worker]
+    outbox[outbox publisher]
+    coord[pipeline coordinator]
+    handlers[handlers]
+  end
+  subgraph scheduler [src/services/scheduler]
+    cron[Croner plus LISTEN/NOTIFY]
+  end
+  shared[src/shared]
+  prisma[prisma/schemas]
+  modules --> prisma
+  outbox --> coord --> handlers
+  cron --> prisma
+  modules --> shared
+  handlers --> shared
+```
+
+### 2b. App source
+
+Page: `app/architecture.md`.
+
+```mermaid
+flowchart TB
+  shell[src/app/App.tsx]
+  gate[CapsSetupGate]
+  screens[pages and modules]
+  capsApi[src/capsApi]
+  forms[HandlerConfigForms]
+  shell --> gate --> screens
+  screens --> capsApi
+  screens --> forms
+  capsApi --> dhis2[DHIS2 DataEngine]
+```
+
+Say under it: `capsApi` is the only path to the engine. Metadata reads go through `@dhis2/app-runtime` and are not on this arrow.
 
 ### 3. One handler key, two repositories
 
@@ -92,7 +137,7 @@ Re-read `package.json` in both repos, `.env.example`, and `CONVENTIONS.md` in th
 
 ### Engine on the host
 
-Page: `engine.md`. Title the block `.env`. These hosts are `localhost` because `dev:*` runs on the host and Compose publishes the ports.
+Page: `engine/index.md`. Title the block `.env`. These hosts are `localhost` because `dev:*` runs on the host and Compose publishes the ports.
 
 ```dotenv
 DATABASE_URL=postgresql://caps:replace-me@localhost:5432/caps
@@ -129,7 +174,7 @@ curl -fsS http://localhost:4000/system/info
 
 ### App on the host
 
-Page: `app.md`.
+Page: `app/index.md`.
 
 ```dotenv
 DHIS2_PROXY_URL=http://localhost:8080
@@ -194,7 +239,7 @@ The key list on the page is the current enum, re-read from `handlers.ts`, not th
 
 ### Tests and commits
 
-Page: `testing.md` and `contribute.md`. Commands only, copied from the materials plan (`bun run test`, `pnpm test`, `pnpm e2e`, Conventional Commit examples). No coverage HTML and no Actions screenshot.
+Pages: `engine/testing.md`, `app/testing.md`, and `contribute.md`. Commands only, copied from the materials plan (`bun run test` on the engine page, `pnpm test` and `pnpm e2e` on the app page, Conventional Commit examples on pull requests). No coverage HTML and no Actions screenshot.
 
 ## What does not get a figure or a snippet
 

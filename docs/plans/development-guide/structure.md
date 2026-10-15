@@ -1,91 +1,85 @@
 # Development guide — structure
 
-Proposed sidebar for `src/content/docs/development-guide/`. Write the pages in this order. Later pages assume the local engine and app are running.
+Same sidebar shape as the deployment guide. Two repositories, two groups. The reader runs the engine, then the app. Detail pages sit inside the group they belong to. Pages that need both repositories come after the groups.
 
-The index file already exists and should stay at `sidebar.order: 0`. Other files are new.
+`src/tabs.ts` autogenerates this sidebar from `src/content/docs/development-guide/`. A directory becomes a group. Set the group label and position on that directory’s `index.md`. Do not special-case `tabs.ts`.
 
-| Order | File | Sidebar label | Reader can… |
+```text
+development-guide/
+  index.md                 Start developing
+  engine/
+    index.md               Run the engine
+    architecture.md        Source architecture
+    testing.md             Engine tests
+  app/
+    index.md               Run the app
+    architecture.md        Source architecture
+    testing.md             App tests
+  handlers.md              Pipeline steps
+  contribute.md            Pull requests
+```
+
+| Order | Page | Sidebar label | Reader can… |
 | ---: | --- | --- | --- |
-| 0 | `index.md` | Start developing | Pick this guide and see which repository they will edit |
-| 1 | `repositories.md` | Repositories | Clone the right repo and name the branch they will work on |
-| 2 | `engine.md` | Engine | Run Postgres, RabbitMQ, and the three Bun processes on a laptop |
-| 3 | `app.md` | DHIS2 app | Open the app at `localhost:3000` against a DHIS2 proxy and a local engine |
-| 4 | `map.md` | Code map | Find the API module, worker, scheduler, or screen that owns a bug |
-| 5 | `handlers.md` | Pipeline steps | Add or change a handler so the engine and the app agree on the key |
-| 6 | `testing.md` | Tests | Run Vitest, Jest, and Playwright the way CI does |
-| 7 | `contribute.md` | Pull requests | Match commit style, hooks, and the checks on `main` |
+| 0 | `index.md` | Start developing | See the two tracks and which repository they will edit |
+| 1 | `engine/index.md` | Run the engine | Start Postgres, RabbitMQ, and the three Bun processes on the host |
+| 2 | `engine/architecture.md` | Source architecture | See how the API, worker, and scheduler source fit together, then open the file |
+| 3 | `engine/testing.md` | Engine tests | Run Vitest the way engine CI does |
+| 4 | `app/index.md` | Run the app | Open the app at `localhost:3000` against a DHIS2 proxy and a local engine |
+| 5 | `app/architecture.md` | Source architecture | See how the DHIS2 shell, screens, and `capsApi` fit together, then open the file |
+| 6 | `app/testing.md` | App tests | Run Jest and Playwright the way app CI does |
+| 7 | `handlers.md` | Pipeline steps | Add or change a handler so the engine and the app agree on the key |
+| 8 | `contribute.md` | Pull requests | Match commit style, hooks, and the checks on `main` |
+
+`engine/index.md` and `app/index.md` are the setup sections. They hold the diagram and the copy-paste commands for that repo. The pages under them are the specifics. Pipeline steps and Pull requests stay outside both groups because a handler change and a review touch both repositories.
+
+There is no standalone repositories page. Each setup page starts with that repo’s clone. The landing page names both remotes and links into the groups.
+
+## Why this shape
+
+A flat list mixes Bun processes with pnpm and the DHIS2 app. Each group has the same three pages: run it, read the source architecture, then test it. The architecture page is where that repo’s directories are explained. The handler contract stays after both groups so it is not filed under only one of them.
 
 ## Page briefs
 
 ### Start developing (`index.md`)
 
-Replace the “being written” note. Audience, the three repositories, and links along the sidebar. Send operators to `/deployment-guide/`. Send people who only need to create a pipeline to `/user-guide/` once that guide exists.
+Already at `sidebar.order: 0` with label “Start developing”. Replace the “being written” note.
 
-### Repositories (`repositories.md`)
+Include the audience, the two application repositories plus this docs site, and two links: **Run the engine**, then **Run the app**. The request diagram (no commands) may sit here so both groups have a picture of where a change lands. Send operators to `/deployment-guide/`. Send people who only need to create a pipeline to `/user-guide/` once that guide exists.
 
-Before you start: Git and a GitHub account.
+No `bun` or `pnpm` commands on this page.
 
-Document the clone URLs and the rule that each app is its own repository. Releases are cut from `main` by semantic-release in both application repos.
+### Run the engine (`engine/index.md`)
 
-```bash
-git clone https://github.com/hisptz/caps-engine.git
-git clone https://github.com/hisptz/caps-app.git
-```
-
-Mention `caps-doc` only as the site this page lives on. How to preview it belongs on the pull request page, not here.
-
-Out of scope: forking policy beyond “branch from `main` and open a PR”. Both CONTRIBUTING files already say that.
-
-### Engine (`engine.md`)
+Group label **Engine**. This index is the group’s first item.
 
 Before you start: Bun 1.x, Docker 24+, Compose v2.
 
-Steps, in this order:
+```bash
+git clone https://github.com/hisptz/caps-engine.git
+```
 
-1. `cp .env.example .env` in caps-engine.
-2. `docker network create chap` if it does not exist. `docker-compose.yml` declares that network as external, so Compose fails without it even for a local stack.
-3. Start infrastructure. Tell the reader to stop the Compose `api`, `worker-1`, `worker-2`, and `scheduler` if they only want host processes, **or** to skip `dev:*` if they are happy with the containers. Running both schedulers is the bug this page must prevent. **Confirm** a recommended local combination before publishing: containers for Postgres, RabbitMQ, and migrate, host processes for the code under edit. The stock `make up` starts the compiled services too.
-4. `bun install` and `bun run db:generate`.
-5. `bun run dev:api`, `dev:worker`, and `dev:scheduler` in separate terminals. These are `bun run --bun --watch` on `src/services/api/index.ts`, `src/services/worker/worker.ts`, and `src/services/scheduler/index.ts`.
-6. Optional: `bun run db:seed` for example pipelines.
+Then the host `.env`, the Compose services that are only Postgres, RabbitMQ, and migrate, and `bun run dev:api`, `dev:worker`, and `dev:scheduler`. The laptop diagram on this page shows one scheduler. Stop the Compose `api`, workers, and scheduler before the host processes. `make up` compiles and starts those services too, so it is a one-line warning with a link to the Deployment Guide, not the daily loop.
 
-Check: API log line that the server is on port 4000, and `GET /system/info` returns 200. RabbitMQ management at `http://localhost:15672` is optional and local-only.
+`CHAP_BASE_URL` is required. Link to Source architecture and Engine tests instead of listing directories or Vitest flags here.
 
-Include the localhost warning for `DATABASE_URL`, `RABBITMQ_URL`, `CHAP_BASE_URL`, and the climate URLs when those values are read **inside** containers. Host `dev:*` processes really do use `localhost` for published ports. The two cases must not be merged into one `.env` snippet.
+Check: the API log says port 4000, and `GET /system/info` returns 200.
 
-`CHAP_BASE_URL` is required by `src/shared/schemas/env.ts`. A local engine will not boot without it, even if the task does not call CHAP. Say that, and point at the example value `http://localhost:8000`.
+### Source architecture (`engine/architecture.md`)
 
-Do not document `docker-compose.dev.yml` as the default. One paragraph: it is an optional fuller stack (DHIS2, CHAP, climate images) and it is not what `make up` uses.
+Before you start: the repo is cloned. The processes do not have to be running.
 
-### DHIS2 app (`app.md`)
+This page is how caps-engine source is arranged, not how to install it. Three entry points, one database, one broker:
 
-Before you start: Node 22–24, pnpm 11 (the `packageManager` field), a DHIS2 2.41+ instance, and a running engine API.
+| Process | Entry | What the source does |
+| --- | --- | --- |
+| API | `src/services/api/index.ts` | Elysia modules. Writes Postgres. Does not publish to RabbitMQ itself |
+| Worker | `src/services/worker/worker.ts` | Outbox publisher, pipeline coordinator, step workers, handlers |
+| Scheduler | `src/services/scheduler/index.ts` | Croner jobs. Syncs from Postgres `LISTEN/NOTIFY`. Exactly one process |
 
-Steps:
+A trigger, manual or cron, writes a `PipelineExecution` and an outbox row. `services/outbox/publisher.ts` publishes that row. `services/runners/pipeline.ts` walks steps. A queued step goes to a `step.<handler-key>` queue and `services/workers/step.ts`. The handler class lives under `services/handlers/`. Queue names are declared from the `HANDLERS` map in `services/monitor/topology.ts`. Shared Zod for the API catalog is `src/shared/handlers/catalog.ts`. Models are split under `prisma/schemas/`.
 
-1. `cp .env.example .env` in caps-app.
-2. `pnpm install`.
-3. `pnpm start`, which is `d2-app-scripts start` proxied at `DHIS2_PROXY_URL`.
-4. Open `http://localhost:3000`. First load with no Route shows **Welcome to CAPS**. The base URL must be reachable from the **DHIS2 server**, not only from the laptop. For DHIS2 on the host and the API on the host, that is `http://localhost:4000`. For DHIS2 in Docker, it is a hostname on that network (the e2e stack uses `http://api:4000`).
-5. After the route exists, the hash routes are Dashboard `#/`, Pipelines, Executions, Climate data, Settings, About.
-
-**Confirm** the proxy story against the current files before writing the commands. `package.json` reads `DHIS2_PROXY_URL`. `.env.example` sets that to `https://play.im.dhis2.org/dev` and sets `DHIS2_BASE_URL` to `http://localhost:8080`. CONTRIBUTING and `docs/GETTING_STARTED.md` still say the proxy is hard-coded to `http://localhost:8080`. Publish the script and the example file. Mention the older docs only as a trap, or fix those docs first.
-
-Check: the CAPS shell loads at `http://localhost:3000`, **Settings** shows **Connected**, and a pipelines list request succeeds. That proves the Route, which a 200 from port 3000 alone does not. The URL, the welcome value, and the hash routes are snippets, not screenshots.
-
-Dev-only rules to state on this page:
-
-- `HashRouter` stays. Do not switch to `BrowserRouter`.
-- CAPS HTTP goes through `src/capsApi`.
-- Forms use React Hook Form, Zod, and `FormProvider`, in the same shape as the pipeline modals.
-
-### Code map (`map.md`)
-
-Before you start: the reader can open either repo. They do not need the app running to use this page.
-
-The request diagram from the diagrams and snippets plan, then tables. Reuse the idea from the system overview without copying the private workspace docs: the browser talks to DHIS2, DHIS2 proxies to the API, the API writes Postgres and an outbox row, the worker publishes to RabbitMQ and runs steps.
-
-Engine paths:
+One diagram of those folders, from the diagrams plan. Then the path table, which is the index of that diagram:
 
 | Path | What to edit |
 | --- | --- |
@@ -101,7 +95,50 @@ Engine paths:
 | `src/shared/schemas/env.ts` | Validated environment |
 | `src/shared/handlers/catalog.ts` | Zod schemas exposed as JSON Schema |
 
-App paths:
+Invariants to state here: one scheduler, workers scale, distroless images have no shell, missed cron ticks are not replayed, handler keys are stored on pipelines so renaming one is a breaking change. The last of those links to Pipeline steps.
+
+### Engine tests (`engine/testing.md`)
+
+Before you start: Postgres from the engine setup page.
+
+- Vitest, not `bun test`. Unit tests in `src/tests/unit/`, integration tests in `src/tests/integration/`.
+- `bun run test`, `bun run test:watch`, `bun run test:coverage`.
+- `make test` points `DATABASE_URL` at `DATABASE_URL_TEST`. Create `caps_test` first (`make db-shell`, then `CREATE DATABASE caps_test;`).
+- CI (`.github/workflows/ci.yml`) runs lint, `format:check`, typecheck, and `test:coverage` against Postgres 17 and RabbitMQ, with `RABBITMQ_URL_TEST`. Local Compose Postgres is 16. Do not tell readers those versions are a mismatch to fix in passing.
+- Integration tests share one database and run one file at a time. Coverage runs under Node because `test:coverage` calls `vitest` directly.
+- **Confirm** whether `make test` is enough locally or whether `RABBITMQ_URL_TEST` must be exported too. CI sets it. The Makefile does not.
+
+### Run the app (`app/index.md`)
+
+Group label **App**. This index is the group’s first item.
+
+Before you start: Node 22–24, pnpm 11 (the `packageManager` field), a DHIS2 2.41+ instance, and the engine API from the Engine group.
+
+```bash
+git clone https://github.com/hisptz/caps-app.git
+```
+
+Then `DHIS2_PROXY_URL`, `pnpm install`, and `pnpm start`. Open `http://localhost:3000`. First load with no Route shows **Welcome to CAPS**. The base URL must be reachable from the DHIS2 server. Hash routes after that are Dashboard `#/`, Pipelines, Executions, Climate data, Settings, About, written as full URLs in the snippets plan.
+
+**Confirm** the proxy story before writing the commands. `package.json` reads `DHIS2_PROXY_URL`. `.env.example` currently points that at `https://play.im.dhis2.org/dev`. CONTRIBUTING and `docs/GETTING_STARTED.md` still say the proxy is hard-coded to `http://localhost:8080`. Publish the script.
+
+Rules on this page:
+
+- `HashRouter` stays. Do not switch to `BrowserRouter`.
+- CAPS HTTP goes through `src/capsApi`.
+- Forms use React Hook Form, Zod, and `FormProvider`.
+
+Check: the shell loads, **Settings** shows **Connected**, and a pipelines request succeeds. A 200 from port 3000 alone does not prove the Route. Link to Source architecture and App tests for the folders and Jest.
+
+### Source architecture (`app/architecture.md`)
+
+Before you start: the repo is cloned.
+
+This page is how caps-app source is arranged. DHIS2 hosts the app. The browser does not call the engine origin. `src/app/App.tsx` mounts the query client, `CapsSetupGate`, and `HashRouter`. A missing Route with code `caps` renders **Welcome to CAPS**. After that, each screen is a hash route.
+
+A screen in `src/pages/` or `src/modules/` reads and writes CAPS only through `src/capsApi/`, which uses the DHIS2 data engine against `routes/caps/run`. The same app reads DHIS2 metadata (org units, data elements, the Route) through `@dhis2/app-runtime` directly. Handler fields live in `src/shared/components/HandlerConfigForms/` and must use the engine enum string. That contract is the Pipeline steps page, not this one.
+
+One diagram of that chain, from the diagrams plan. Then the path table:
 
 | Path | What to edit |
 | --- | --- |
@@ -111,53 +148,40 @@ App paths:
 | `src/shared/components/HandlerConfigForms/` | Operator fields for a handler |
 | `d2.config.js` | App title **CAPS**, `minDHIS2Version` 2.41 |
 
-State the invariants in one list: one scheduler, workers scale, distroless images have no shell, missed cron ticks are not replayed, handler keys are stored on pipelines so renaming one is a breaking change.
+Link to Pipeline steps before describing a new handler form. The key has to match the engine enum.
+
+### App tests (`app/testing.md`)
+
+Before you start: `pnpm install` from the app setup page. Playwright needs Docker.
+
+- `pnpm typecheck`, `pnpm lint` (ESLint and `prettier -c`), `pnpm test` (Jest via `d2-app-scripts`).
+- `pnpm exec d2-app-scripts i18n generate` before tests if `src/locales` is missing. CI does this because `src/locales` is gitignored.
+- Playwright: `pnpm e2e:up`, `pnpm build`, `pnpm e2e`, `pnpm e2e:down`. Specs live in `e2e/` (`onboarding.spec.ts`, `navigation.spec.ts`, `pipelines.spec.ts`). Desktop Chrome, one worker, disposable stack on `127.0.0.1:18080`, route target `http://api:4000`.
+- CI runs typecheck, ESLint, Prettier, Jest, and e2e. Trust `.github/workflows/ci.yml`. `CONTRIBUTING.md` and `docs/GETTING_STARTED.md` still say CI skips Jest and that no Playwright specs exist. Do not copy those sentences.
 
 ### Pipeline steps (`handlers.md`)
 
-Before you start: engine tests run, and the reader has read the code map.
+After both groups. Before you start: the reader has read both source-architecture pages, and engine tests run.
 
-This is the page for a new or changed step. Follow `CONVENTIONS.md`:
+Follow `CONVENTIONS.md`:
 
 1. Add a `Handlers` enum string and a `HANDLERS` entry. `queueName` is `step.<handler-key>`.
 2. Implement `StepHandler.execute(ctx)` under `src/services/worker/services/handlers/<camelCase>/`.
 3. Put operator config on `schemas.config` and pipeline-context reads on `schemas.context`. Leave `schemas` empty when the step has neither. Do not add dummy objects.
-4. Re-export from `src/services/worker/services/handlers/index.ts`. Topology picks up queues from the map. Do not invent a queue name outside it.
-5. In caps-app, add a form under `HandlerConfigForms` and register it so the key matches the enum string exactly.
+4. Re-export from `src/services/worker/services/handlers/index.ts`. Topology picks up queues from the map.
+5. In caps-app, add a form under `HandlerConfigForms` whose key matches the enum string.
 
-List the current keys so the page can name them, and tell the writer to re-read the enum rather than trust this plan if it has drifted:
+The handler-key diagram and the skeleton are on this page. Re-read the enum before publishing the key list:
 
 `open-climate-service-sync`, `climate-openeo-create`, `climate-openeo-poll`, `climate-openeo-download`, `prediction-trigger`, `prediction-poll`, `prediction-data-download`, `dhis2-instance-pull`, `dhis2-data-upload`, `dhis2-analytics-run`, `threshold-generation`, `alert-generation`, `event-data-upload`.
 
-Check: the handler catalog endpoint shows the new key, the app form renders it, and a unit test calls `execute`.
-
-Link the User Guide for what the step means to an operator. This page is how to implement it.
-
-### Tests (`testing.md`)
-
-Before you start: the engine page’s database exists. The app page’s install exists for Jest. Playwright needs Docker.
-
-Engine:
-
-- Vitest, not `bun test`. Unit tests in `src/tests/unit/`, integration tests in `src/tests/integration/`.
-- `bun run test`, `bun run test:watch`, `bun run test:coverage`.
-- `make test` points `DATABASE_URL` at `DATABASE_URL_TEST`. Create `caps_test` before that (`make db-shell`, then `CREATE DATABASE caps_test;`).
-- CI (`.github/workflows/ci.yml`) runs lint, `format:check`, typecheck, and `test:coverage` against Postgres 17 and RabbitMQ, with `RABBITMQ_URL_TEST`. Local Compose Postgres is 16. Do not tell readers those versions are a mismatch to “fix” in passing.
-- Integration tests share one database and run one file at a time. Coverage is collected under Node because Bun’s runner does not support it (`test:coverage` calls `vitest` directly).
-- **Confirm** whether `make test` is enough for integration tests locally or whether `RABBITMQ_URL_TEST` must be exported too. CI sets it. The Makefile does not.
-
-App:
-
-- `pnpm typecheck`, `pnpm lint` (ESLint and `prettier -c`), `pnpm test` (Jest via `d2-app-scripts`).
-- `pnpm exec d2-app-scripts i18n generate` before tests if `src/locales` is missing. CI does this because `src/locales` is gitignored.
-- Playwright: `pnpm e2e:up`, `pnpm build`, `pnpm e2e`, `pnpm e2e:down`. Specs live in `e2e/` (`onboarding.spec.ts`, `navigation.spec.ts`, `pipelines.spec.ts`). The config uses Desktop Chrome, one worker, and a disposable stack (`e2e/stack/docker-compose.yml`) with DHIS2 on `127.0.0.1:18080` and the route target `http://api:4000`.
-- CI runs typecheck, ESLint, Prettier, Jest, and e2e. Trust `.github/workflows/ci.yml`. `CONTRIBUTING.md` and `docs/GETTING_STARTED.md` still say CI skips Jest and that no Playwright specs exist. Those sentences are stale. Do not copy them.
+Check: the handler catalog shows the new key, the app form renders it, and a unit test calls `execute`. Link the User Guide for what the step means to an operator.
 
 ### Pull requests (`contribute.md`)
 
-Before you start: the reader has a branch and the tests for their repo pass.
+After both groups. Before you start: the branch exists and the tests for the touched repo pass.
 
-Cover both application repos in one page, with a small table where they differ.
+One page, with a small table where the repos differ.
 
 Shared:
 
@@ -167,24 +191,25 @@ Shared:
 - Security reports go to `SECURITY.md`, not a public issue. Other contact: info@hisptanzania.org.
 - Search existing issues first. Use the bug and feature templates.
 
-Engine extras: tests for handler, queue, or API behavior. Handler keys stay aligned with app forms (`CONVENTIONS.md`).
+Engine extras: tests for handler, queue, or API behavior. Handler keys stay aligned with app forms.
 
 App extras: `HashRouter`, `src/capsApi`, `i18n.t()`, React Hook Form plus Zod.
 
-Docs site extras, a short section at the end: edit `src/content/docs/`, preview with `pnpm dev` at `http://localhost:4321`, and update `docs/plans/` when a command on a plan page changes. Plans are not published.
+Docs site, a short section at the end: edit `src/content/docs/`, preview with `pnpm dev` at `http://localhost:4321`, and update `docs/plans/` when a planned command changes. Plans are not published.
 
-Check: the PR description says what changed and how it was run. CI on the PR is the definition of done.
+Check: the PR says what changed and how it was run. CI on the PR is the definition of done.
 
 ## Writing order
 
-1. Repositories, Engine, and App, after the proxy and scheduler **confirm** items are resolved.
-2. Code map and Pipeline steps.
-3. Tests and Pull requests.
-4. Landing page last.
+1. `engine/index.md` and `app/index.md`, after the proxy and scheduler **confirm** items are resolved.
+2. `engine/architecture.md`, `app/architecture.md`, and `handlers.md`.
+3. `engine/testing.md`, `app/testing.md`, and `contribute.md`.
+4. `index.md` last, so its two links match the pages that exist.
 
 ## Pages we are not adding
 
+- A third group that repeats engine and app setup.
 - A production compose walkthrough. Deployment Guide.
 - An operator tour of Dashboard and Pipelines. User Guide.
 - A generated API reference. Link to OpenAPI once its path is confirmed.
-- A chapter per handler. One page that teaches the pattern, plus the key list.
+- A chapter per handler. One shared page for the pattern, plus the key list.
