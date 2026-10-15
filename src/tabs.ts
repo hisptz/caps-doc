@@ -12,13 +12,6 @@ export function tabHref(tab: Tab): string {
 	return tab.directory ? `/${tab.directory}/` : '/';
 }
 
-/** Sidebar group for a tab: Home holds the landing page, other tabs list their folder. */
-export function tabSidebar(tab: Tab) {
-	return tab.directory
-		? { label: tab.label, items: [{ autogenerate: { directory: tab.directory } }] }
-		: { label: tab.label, items: ['index'] };
-}
-
 /** Which tab a path (without the site base) belongs to. */
 export function activeTab(path: string): string {
 	const folder = path.replace(/^\/+/, '').split('/')[0];

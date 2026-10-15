@@ -1,6 +1,8 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import { tabs, tabSidebar } from './src/tabs';
+import mermaid from 'astro-mermaid';
+import { tabs } from './src/tabs';
+import { tabSidebar } from './src/sidebar';
 
 // https://astro.build/config
 export default defineConfig({
@@ -8,6 +10,7 @@ export default defineConfig({
 	site: 'https://hisptz.github.io',
 	base: '/caps-doc',
 	integrations: [
+		mermaid({ autoTheme: true }),
 		starlight({
 			title: 'CAPS',
 			logo: { src: './src/assets/caps-icon.png' },
