@@ -71,7 +71,7 @@ Steps:
 
 **Confirm** the proxy story against the current files before writing the commands. `package.json` reads `DHIS2_PROXY_URL`. `.env.example` sets that to `https://play.im.dhis2.org/dev` and sets `DHIS2_BASE_URL` to `http://localhost:8080`. CONTRIBUTING and `docs/GETTING_STARTED.md` still say the proxy is hard-coded to `http://localhost:8080`. Publish the script and the example file. Mention the older docs only as a trap, or fix those docs first.
 
-Check: the CAPS shell loads, **Settings** shows **Connected**, and a pipelines list request succeeds. That proves the Route, which a 3000 response alone does not.
+Check: the CAPS shell loads at `http://localhost:3000`, **Settings** shows **Connected**, and a pipelines list request succeeds. That proves the Route, which a 200 from port 3000 alone does not. The URL, the welcome value, and the hash routes are snippets, not screenshots.
 
 Dev-only rules to state on this page:
 
@@ -83,7 +83,7 @@ Dev-only rules to state on this page:
 
 Before you start: the reader can open either repo. They do not need the app running to use this page.
 
-A short picture of a request, then tables. Reuse the idea from the system overview without copying the private workspace docs: the browser talks to DHIS2, DHIS2 proxies to the API, the API writes Postgres and an outbox row, the worker publishes to RabbitMQ and runs steps.
+The request diagram from the diagrams and snippets plan, then tables. Reuse the idea from the system overview without copying the private workspace docs: the browser talks to DHIS2, DHIS2 proxies to the API, the API writes Postgres and an outbox row, the worker publishes to RabbitMQ and runs steps.
 
 Engine paths:
 

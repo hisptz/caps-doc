@@ -48,7 +48,7 @@ Use admonitions for rules that break a pull request:
 - Exactly one scheduler process. A host `dev:scheduler` plus the Compose scheduler will double-fire pipelines.
 - Hot reload does not exist inside the distroless images. `docker exec` will fail on api, worker, and scheduler.
 
-Prefer a directory tree and a link to the source file over a screenshot of an editor. Prefer a screenshot only when the reader must recognize a DHIS2 screen (the local app shell, the welcome route form).
+Illustrate with a diagram or a copy-paste snippet. Do not plan screenshots for this guide. A directory tree and a source path beat a picture of an editor. A hash URL in a code block beats a picture of the address bar. The inventory is [diagrams and snippets](./diagrams-and-snippets.md).
 
 ## Two repositories, one product
 
