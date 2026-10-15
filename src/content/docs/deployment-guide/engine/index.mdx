@@ -1,0 +1,328 @@
+---
+title: Deploy the engine
+description: Start the API, workers, one scheduler, Postgres, and RabbitMQ from published images.
+sidebar:
+  label: Engine
+  order: 1
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Start the CAPS engine from published container images. Pin a release tag. The current release is `3.0.0`.
+
+## Before you start
+
+- Docker 24 or newer, and Compose v2, on a host that can pull `ghcr.io/hisptz/caps-engine/`.
+- A tag to pin. Use `3.0.0`. `latest` moves with the default branch and is only for a trial.
+- The ports, accounts, and image names in [Requirements](/deployment-guide/engine/requirements/).
+- URLs the workers can call, from [CHAP, climate, and DHIS2](/deployment-guide/engine/connections/). Add those lines to `.env` before the first start. The process rejects an empty URL.
+
+`make up` in the caps-engine repository always builds images from source. That is a [local development](/development-guide/engine/) loop, not this install.
+
+Three different processes read URLs. A value that is right for one of them is often wrong for the others.
+
+```mermaid
+flowchart TB
+  env[".env on the Docker host"]
+  env -->|"postgres and rabbitmq hostnames"| containers[API workers scheduler migrate]
+  env -->|"DHIS2 CHAP and climate URLs"| workers[Workers]
+  admin[Operator browser] --> dhis2[DHIS2]
+  dhis2 -->|"Route base URL plus /**"| api[CAPS API]
+```
+
+You can run CAPS with its own Postgres and RabbitMQ, or attach it to the Postgres and RabbitMQ that CHAP is already using. The second layout does not change `CHAP_BASE_URL`. That variable is the CHAP HTTP API, and it is required in both layouts.
+
+```mermaid
+flowchart TB
+  subgraph own [CAPS with its own data stores]
+    api1[API] --> pg1[(Postgres)]
+    api1 --> mq1[[RabbitMQ]]
+  end
+  subgraph shared [CAPS on an existing CHAP network]
+    api2[API] --> pg2[(CHAP Postgres)]
+    api2 --> mq2[[CHAP RabbitMQ]]
+  end
+```
+
+## Steps
+
+Save both files in an empty directory. Replace every `replace-me` with a password you keep out of git. The same password has to appear in the matching URL.
+
+<Tabs>
+	<TabItem label="Own Postgres and RabbitMQ">
+
+```dotenv title=".env"
+IMAGE_TAG=3.0.0
+API_PORT=4000
+
+POSTGRES_USER=caps
+POSTGRES_PASSWORD=replace-me
+POSTGRES_DB=caps
+
+# Hostnames are the Compose service names. localhost is the container itself.
+DATABASE_URL=postgresql://caps:replace-me@postgres:5432/caps
+RABBITMQ_USER=caps
+RABBITMQ_PASSWORD=replace-me
+RABBITMQ_URL=amqp://caps:replace-me@rabbitmq:5672
+
+# Required. The API does not boot without it.
+CHAP_BASE_URL=https://chap.example.org
+CHAP_API_TOKEN=
+```
+
+```yaml title="compose.yml"
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [caps]
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+    networks: [caps]
+
+  migrate:
+    image: ghcr.io/hisptz/caps-engine/migrate:${IMAGE_TAG}
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+    networks: [caps]
+
+  worker-1:
+    image: ghcr.io/hisptz/caps-engine/worker:${IMAGE_TAG}
+    environment: &worker_env
+      DATABASE_URL: ${DATABASE_URL}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      DHIS2_BASE_URL: ${DHIS2_BASE_URL}
+      DHIS2_USERNAME: ${DHIS2_USERNAME}
+      DHIS2_PASSWORD: ${DHIS2_PASSWORD}
+      CHAP_BASE_URL: ${CHAP_BASE_URL}
+      CHAP_API_TOKEN: ${CHAP_API_TOKEN:-}
+      CLIMATE_API_BASE_URL: ${CLIMATE_API_BASE_URL}
+      CLIMATE_DATA_BASE_URL: ${CLIMATE_DATA_BASE_URL}
+      OUTPUTS_DIR: /tmp/caps-outputs
+    depends_on: &worker_depends
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - caps_outputs:/tmp/caps-outputs
+    restart: unless-stopped
+    networks: [caps]
+
+  worker-2:
+    image: ghcr.io/hisptz/caps-engine/worker:${IMAGE_TAG}
+    environment: *worker_env
+    depends_on: *worker_depends
+    volumes:
+      - caps_outputs:/tmp/caps-outputs
+    restart: unless-stopped
+    networks: [caps]
+
+  # Exactly one replica. A second scheduler double-fires pipelines.
+  scheduler:
+    image: ghcr.io/hisptz/caps-engine/scheduler:${IMAGE_TAG}
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      DHIS2_BASE_URL: ${DHIS2_BASE_URL}
+      DHIS2_USERNAME: ${DHIS2_USERNAME}
+      DHIS2_PASSWORD: ${DHIS2_PASSWORD}
+      CHAP_BASE_URL: ${CHAP_BASE_URL}
+      CHAP_API_TOKEN: ${CHAP_API_TOKEN:-}
+      CLIMATE_API_BASE_URL: ${CLIMATE_API_BASE_URL}
+      CLIMATE_DATA_BASE_URL: ${CLIMATE_DATA_BASE_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks: [caps]
+
+  api:
+    image: ghcr.io/hisptz/caps-engine/api:${IMAGE_TAG}
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      PORT: 4000
+      DHIS2_BASE_URL: ${DHIS2_BASE_URL}
+      DHIS2_USERNAME: ${DHIS2_USERNAME}
+      DHIS2_PASSWORD: ${DHIS2_PASSWORD}
+      CHAP_BASE_URL: ${CHAP_BASE_URL}
+      CHAP_API_TOKEN: ${CHAP_API_TOKEN:-}
+      CLIMATE_API_BASE_URL: ${CLIMATE_API_BASE_URL}
+      CLIMATE_DATA_BASE_URL: ${CLIMATE_DATA_BASE_URL}
+    ports:
+      - "${API_PORT:-4000}:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks: [caps]
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  caps_outputs:
+
+networks:
+  caps:
+```
+
+Postgres and RabbitMQ are not published to the host. The API is published on `API_PORT` (4000 unless you change it). Put TLS in front of that port when the Route URL uses `https`. The app does not terminate TLS.
+
+```bash
+docker compose -f compose.yml pull
+docker compose -f compose.yml up -d
+docker compose -f compose.yml ps
+```
+
+	</TabItem>
+	<TabItem label="Beside an existing CHAP">
+
+Use the same `compose.yml` as the other tab, plus this overlay. It does not start a second Postgres or RabbitMQ. Point the three variables at the network and the hostnames CHAP is already using.
+
+```dotenv title=".env"
+IMAGE_TAG=3.0.0
+API_PORT=4000
+
+CHAP_NETWORK=chap_default
+CHAP_DATABASE_URL=postgresql://caps:replace-me@chap-postgres:5432/caps
+CHAP_RABBITMQ_URL=amqp://caps:replace-me@chap-rabbitmq:5672
+
+# Required HTTP API. This is not the database URL above.
+CHAP_BASE_URL=https://chap.example.org
+CHAP_API_TOKEN=
+```
+
+```yaml title="compose.chap.yml"
+networks:
+  chap:
+    name: ${CHAP_NETWORK:-chap_default}
+    external: true
+
+services:
+  postgres:
+    profiles: [disabled]
+  rabbitmq:
+    profiles: [disabled]
+
+  migrate:
+    environment:
+      DATABASE_URL: ${CHAP_DATABASE_URL}
+    depends_on: !override {}
+    networks: [chap]
+
+  worker-1:
+    environment:
+      DATABASE_URL: ${CHAP_DATABASE_URL}
+      RABBITMQ_URL: ${CHAP_RABBITMQ_URL}
+    depends_on: !override
+      migrate:
+        condition: service_completed_successfully
+    networks: [chap]
+
+  worker-2:
+    environment:
+      DATABASE_URL: ${CHAP_DATABASE_URL}
+      RABBITMQ_URL: ${CHAP_RABBITMQ_URL}
+    depends_on: !override
+      migrate:
+        condition: service_completed_successfully
+    networks: [chap]
+
+  scheduler:
+    environment:
+      DATABASE_URL: ${CHAP_DATABASE_URL}
+    depends_on: !override
+      migrate:
+        condition: service_completed_successfully
+    networks: [chap]
+
+  api:
+    environment:
+      DATABASE_URL: ${CHAP_DATABASE_URL}
+      RABBITMQ_URL: ${CHAP_RABBITMQ_URL}
+    depends_on: !override
+      migrate:
+        condition: service_completed_successfully
+    networks: [chap]
+```
+
+Find the network and the Postgres hostname CHAP is already using:
+
+```bash
+docker network ls | grep chap
+docker inspect <chap_postgres_container>
+```
+
+In the inspect output, the network `Name` is the hostname to put in `CHAP_DATABASE_URL`. Then:
+
+```bash
+docker compose -f compose.yml -f compose.chap.yml pull
+docker compose -f compose.yml -f compose.chap.yml up -d
+docker compose -f compose.yml -f compose.chap.yml ps
+```
+
+`make up-chap` in the caps-engine repository passes `--build` and compiles from source. Use the commands above so Compose pulls `IMAGE_TAG` and does not build. `!override` replaces the Postgres and RabbitMQ `depends_on` entries from `compose.yml`. On Compose v5, an empty `depends_on: {}` does not remove them, and the project is rejected because those services are disabled. The repository overlay still uses `depends_on: {}`. Migrate retries on failure if CHAP's Postgres is not ready on the first attempt.
+
+	</TabItem>
+</Tabs>
+
+If the registry denies the pull, sign in to `ghcr.io` with a GitHub account that can read `hisptz/caps-engine`.
+
+The API, worker, and scheduler images are distroless. They have no shell. Read them with `docker compose logs`, not `docker exec`.
+
+:::caution
+Run exactly one `scheduler` container. A second replica triggers each pipeline twice. Workers are stateless. This file starts two (`worker-1` and `worker-2`).
+:::
+
+The OpenAPI document is served by the API at `/openapi` (Scalar) and `/openapi/json`. It is a reference for the HTTP API, not a list of pipeline steps.
+
+## Check
+
+`docker compose ps` shows `migrate` exited with code 0. `api`, `worker-1`, `worker-2`, and one `scheduler` are running.
+
+From a machine on the same Docker network as `api`:
+
+```bash
+curl -fsS http://api:4000/system/info
+```
+
+`GET /system/info` needs no authentication header. A 200 means the API process answered. CHAP, DHIS2, and the climate service can still report `connected: false` inside that body. A 200 from your laptop only proves the published host port, which is not the URL the DHIS2 server will use.
+
+## If this fails
+
+The API restarts immediately when `CHAP_BASE_URL` is missing, or when `DATABASE_URL` or `RABBITMQ_URL` uses `localhost`. See [Troubleshooting](/deployment-guide/troubleshooting/).
+
+Next: [CHAP, climate, and DHIS2](/deployment-guide/engine/connections/), then [Run and upgrade](/deployment-guide/engine/operate/).
