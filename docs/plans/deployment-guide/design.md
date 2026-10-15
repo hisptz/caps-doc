@@ -46,7 +46,7 @@ Use Starlight admonitions for rules that are easy to miss:
 - The Route URL is called by the **DHIS2 server**, not by the browser. `localhost` on the welcome form is wrong whenever DHIS2 runs in another container or on another host.
 - Demo passwords in `.env.example` (`admin` / `district`, `caps` / `caps`) are for local trials. Production pages must say to replace them.
 
-Prefer a diagram over a screenshot when the subject is processes and networks. Prefer a screenshot when the subject is a DHIS2 screen. Terminal transcripts are not screenshots; show the command and the success line only.
+Illustrate with a diagram or a copy-paste snippet. Do not plan screenshots for this guide. A fenced block with a filename is the setup aid. A Mermaid figure is how the processes and URLs fit together. When a step is a DHIS2 form, name the label in **bold** and show the value to type. The inventory is [diagrams and snippets](./diagrams-and-snippets.md).
 
 ## URLs have three viewers
 
@@ -90,13 +90,9 @@ sidebar:
 - Do not document patient data, tracker event payloads, or a sample prediction file.
 - When a behavior is only true of the current Compose file, cite the file in the plan (not in the public page) and re-read it before publishing. Compose and the welcome form drift.
 
-## Diagrams to draw (not screenshots)
+## Diagrams and snippets
 
-Draw these as Mermaid in the page, or as a simple SVG if Mermaid is hard to read on the site. Do not screenshot a whiteboard.
-
-1. **Processes** — DHIS2 (app + Route), API, scheduler (×1), workers (×N), Postgres, RabbitMQ, CHAP, climate service.
-2. **First-run request** — browser → DHIS2 → Route `caps` → API. Same picture as Settings → the connection diagram already in the app (DHIS2 instance proxies to CAPS service).
-3. **Two install layouts** — CAPS with its own Postgres and RabbitMQ, and CAPS joined to an existing CHAP network (`make up-chap`). One figure, two clusters.
+The figures and the copy-paste files are listed in [diagrams and snippets](./diagrams-and-snippets.md). Use Mermaid in the page, and Starlight tabs when a page offers two layouts. Enable a Mermaid renderer in `astro.config.mjs` before the first diagram page ships. Do not export the figures to images.
 
 ## What the landing page should do
 
@@ -104,7 +100,7 @@ Replace the stub note on `deployment-guide/index.md` with:
 
 - Who the guide is for.
 - The two installables (engine images, DHIS2 app zip) and the systems they depend on (DHIS2 2.41+, CHAP, climate service).
-- A numbered path through the sidebar.
+- Two next steps, in order: **Deploy the engine**, then **Deploy the app**. Specific pages live inside those sidebar groups.
 - A single “you are finished when” checklist matching the five conditions above.
 
-Do not put install commands on the landing page.
+Do not put install commands on the landing page. The copy-paste snippets start on the two deploy pages.
