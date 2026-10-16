@@ -8,10 +8,8 @@ Pages live in `src/content/docs/` as Markdown (`.md`) or MDX (`.mdx`):
 - `user-guide/` — end-user manual, first-run walkthrough, and troubleshooting
 - `deployment-guide/` — administrator setup and handover guide
 - `development-guide/` — developer starting point
-- `engine/` and `app/` — detailed pages, grouped by audience in `src/tabs.ts`
 
-`src/tabs.ts` defines the header tabs, ordered sidebar pages, and each page's guide membership.
-Existing `engine/` and `app/` URLs are retained when reorganizing navigation.
+A folder with an index page directly under `src/content/docs/` becomes a header tab. A folder inside a guide becomes a sidebar group. `src/tabs.ts` and `src/sidebar.ts` read those folders, so a new directory shows up without a menu edit.
 
 | Command        | Action                                     |
 | :------------- | :----------------------------------------- |

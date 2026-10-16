@@ -1,13 +1,39 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import { tabs, tabSidebar } from './src/tabs';
+import mermaid from 'astro-mermaid';
+import { getTabs } from './src/tabs';
+import { tabSidebar } from './src/sidebar';
+
+// Astro marks propagated MDX assets with a directive Rolldown does not know.
+// Nothing in Astro reads that string back; head data is tied to the module id.
+function stripUnusedHeadDirective() {
+	return {
+		name: 'caps-strip-head-inject-directive',
+		enforce: 'post',
+		transform(code, id) {
+			if (!id.includes('astroPropagatedAssets') || !code.includes('"use astro:head-inject"')) return;
+			return code.replace(/^\s*"use astro:head-inject";\s*/m, '');
+		},
+	};
+}
 
 // https://astro.build/config
 export default defineConfig({
 	// Hosted on GitHub Pages: https://hisptz.github.io/caps-doc/
 	site: 'https://hisptz.github.io',
 	base: '/caps-doc',
+	// Starlight's /404 route and the docs entry 404.md both render that path.
+	// The dedicated route wins. Ignore that one known overlap.
+	prerenderConflictBehavior: 'ignore',
+	vite: {
+		plugins: [stripUnusedHeadDirective()],
+		build: {
+			// Mermaid is loaded only on pages with diagrams, and the library itself is ~650 kB.
+			chunkSizeWarningLimit: 800,
+		},
+	},
 	integrations: [
+		mermaid({ autoTheme: true }),
 		starlight({
 			title: 'CAPS',
 			logo: { src: './src/assets/caps-icon.png' },
@@ -25,7 +51,7 @@ export default defineConfig({
 				{ icon: 'github', label: 'caps-engine', href: 'https://github.com/hisptz/caps-engine' },
 				{ icon: 'github', label: 'caps-app', href: 'https://github.com/hisptz/caps-app' },
 			],
-			sidebar: tabs.map(tabSidebar),
+			sidebar: getTabs().map(tabSidebar),
 		}),
 	],
 });
