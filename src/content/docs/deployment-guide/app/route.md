@@ -21,7 +21,7 @@ The same three viewers as on [Deploy the engine](/deployment-guide/engine/) appl
 Open **CAPS**. With no Route yet, the screen is:
 
 - Heading **Welcome to CAPS**.
-- Field **CAPS backend base URL**. No trailing slash, and no `/**`. Placeholder `https://caps.example.org`. The help text reads: “Full URL of the CAPS service (scheme and host, no trailing slash). Example: https://caps.example.org”.
+- Field **CAPS backend base URL**. No trailing slash, and no `/**`. Placeholder `https://caps.example.org`. The help text reads: “Full URL of the CAPS service (scheme and host, no trailing slash). Example: `https://caps.example.org`”.
 - Button **Save and continue**.
 
 Type the base URL the DHIS2 server can call:
