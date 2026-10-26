@@ -6,7 +6,7 @@ sidebar:
   order: 8
 ---
 
-Find the symptom, then open the page that owns the fix. Pipeline failures and dead letters are in the [User Guide](/user-guide/).
+Find the symptom, then open the page that owns the fix. A pipeline run that started and then failed is [Trace a failure](/user-guide/executions/failures/).
 
 ## Before you start
 

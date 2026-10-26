@@ -84,3 +84,10 @@ body {
 	color: var(--caps-header-fg) !important;
 	box-shadow: none !important;
 }
+
+/* Screenshots stay at their own pixel size, and shrink to the column. */
+.sl-markdown-content :where(img) {
+	width: auto;
+	max-width: 100%;
+	height: auto;
+}
