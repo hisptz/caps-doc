@@ -10,6 +10,8 @@ This page is the rest of the engine `.env`. It is not a second install. Use it w
 
 The hostnames below must be reachable from the **worker container**. `localhost` inside that container is the worker itself.
 
+Importing a climate dataset, and connecting another DHIS2 instance to pull data from, are operator tasks: [Import climate data](/user-guide/prepare/climate-data/) and [Connect a source instance](/user-guide/prepare/connections/).
+
 ## Before you start
 
 - The `.env` and Compose file from [Deploy the engine](/deployment-guide/engine/).
