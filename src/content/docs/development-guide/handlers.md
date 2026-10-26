@@ -6,7 +6,7 @@ sidebar:
   order: 7
 ---
 
-A pipeline step is a handler key shared by caps-engine and caps-app. What the step means to an operator is the [User Guide](/user-guide/). This page is the code contract.
+A pipeline step is a handler key shared by caps-engine and caps-app. What the step means to an operator is [Handlers](/user-guide/pipelines/handlers/). This page is the code contract.
 
 ## Before you start
 

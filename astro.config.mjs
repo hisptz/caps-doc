@@ -53,6 +53,10 @@ export default defineConfig({
 	// Hosted on GitHub Pages: https://hisptz.github.io/caps-doc/
 	site: 'https://hisptz.github.io',
 	base: '/caps-doc',
+	// User Guide screenshots are the original Word files. Serve those bytes.
+	image: {
+		service: { entrypoint: 'astro/assets/services/noop' },
+	},
 	// Starlight's /404 route and the docs entry 404.md both render that path.
 	// The dedicated route wins. Ignore that one known overlap.
 	prerenderConflictBehavior: 'ignore',

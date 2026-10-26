@@ -51,7 +51,7 @@ On **About**, the section heading is **Connected systems**. The cards are **CAPS
 
 Every row in the table passes, and **Settings** shows **Connected**.
 
-Creating the first pipeline is the [User Guide](/user-guide/). Do not create one to prove the install.
+Creating the first pipeline starts in [Before a pipeline](/user-guide/prepare/). Do not create one to prove the install.
 
 ## If this fails
 
