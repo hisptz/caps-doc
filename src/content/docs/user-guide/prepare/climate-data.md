@@ -10,7 +10,7 @@ CAPS imports climate data from the Open Climate Service. CHAP uses that data whe
 
 ## Before you start
 
-The climate service URL is reachable from the CAPS workers. That URL is set at install, on [CHAP, climate, and DHIS2](/deployment-guide/engine/connections/). You are on the [Climate Data](/user-guide/interface/) screen.
+The climate service URL is reachable from the CAPS workers. That URL is set at install, on [CHAP, climate, and DHIS2](/deployment-guide/engine/connections/).
 
 ## Steps
 
