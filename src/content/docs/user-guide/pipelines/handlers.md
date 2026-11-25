@@ -21,6 +21,7 @@ You are adding a step on [Create a pipeline](/user-guide/pipelines/).
 | **DHIS2 Instance Pull** | Reads selected data from a connected DHIS2 instance | Source instance, data items, organisation unit mapping, periods |
 | **DHIS2 Data Upload** | Writes data into a DHIS2 instance | Import strategy |
 | **DHIS2 Analytics Run** | Builds the analytics tables so later steps can query the values just written | Which years to run, and how to poll the analytics job |
+| **DHIS2 Notify** | Sends a DHIS2 message to the chosen user groups and users | Recipients, subject, and message. See [Notifications](/user-guide/notifications/) |
 
 A pull of routine data uses these three in order. See [Pull data from another instance](/user-guide/pipelines/pull-data/).
 

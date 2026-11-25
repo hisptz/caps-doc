@@ -91,7 +91,7 @@ Pause is the control to use when something outside CAPS needs attention, such as
 
 ![Step Executions, with status, attempt, and duration on each row](../../../../assets/user-guide/fig-088-step-executions.png)
 
-**Step Executions** lists every step in the order it was carried out. Each row shows the step number and name, a status, the attempt number, and the time the step started with its duration.
+**Step Executions** lists every step in the order it was carried out. Each row shows the step number and name, a status, the attempt number, and the time the step started with its duration. A completed **DHIS2 Notify** row means that step sent its message. If nobody received an email, the message can still be in the DHIS2 inbox. See [Notifications](/user-guide/notifications/).
 
 Steps here are numbered from 1. On the pipeline's **Steps** tab the Order column begins at 0. Order 0 there is Step 1 here.
 

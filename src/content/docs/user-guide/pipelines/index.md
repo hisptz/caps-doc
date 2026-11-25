@@ -67,4 +67,4 @@ The pipeline is in the list, and **Steps** shows the operations in the order the
 
 ## Next
 
-[Trigger, edit, or delete](/user-guide/pipelines/manage/) the pipeline, or [add a schedule](/user-guide/schedules/).
+[Trigger, edit, or delete](/user-guide/pipelines/manage/) the pipeline, [add a schedule](/user-guide/schedules/), or [tell people when a run fails or a step finishes](/user-guide/notifications/).
