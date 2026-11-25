@@ -33,7 +33,7 @@ A scheduled run can apply its own overrides. That is [Input context](/user-guide
 
 ## Edit
 
-**Pipeline details.** From **Pipelines**, click **Edit** on the row. Change the fields and click **Save changes**. Or open the pipeline, click **Edit** at the top right, and save. Section **3 Notifications** is where a failed run sends a DHIS2 message. Set those recipients on [Notifications](/user-guide/notifications/).
+**Pipeline details.** From **Pipelines**, click **Edit** on the row. Change the fields and click **Save Changes**. Or open the pipeline, click **Edit** at the top right, and save.
 
 ![Edit in the pipeline list Actions column](../../../../assets/user-guide/fig-049-editing-a-pipeline.png)
 

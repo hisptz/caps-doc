@@ -185,8 +185,6 @@ Analytics makes the uploaded covariates available for the prediction.
 
 Drag the nine-dot handle if a step is out of order. For two covariates the order is: sync, then temperature create-poll-download-upload, then precipitation create-poll-download-upload, then analytics, trigger, poll, download, and upload.
 
-To tell people the prediction is ready, add a **DHIS2 Notify** step after the poll. To tell them the forecast is written to DHIS2, add it after the upload. See [Notifications](/user-guide/notifications/).
-
 ## Check
 
 **Steps** lists every covariate block, then analytics, then the four prediction steps. After you [trigger](/user-guide/pipelines/manage/) the pipeline, the forecast values appear in the [sectioned dataset](/user-guide/prepare/data/) in Data Entry.

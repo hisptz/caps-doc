@@ -28,8 +28,6 @@ The execution status is **Failed**, and you have the page in [One execution](/us
 | A prediction step fails while the steps before it succeeded | The covariate data is in place and the prediction setup does not match. Check the setup in the Modelling App. |
 | A run completes, and the same months appear every time | A step is using a fixed range instead of a rolling window. This is a [schedule setting](/user-guide/schedules/input-context/). The run did not fail. |
 | A run shows Attempt 2 or 3 on a step and then completes | The step is succeeding on retry. Investigate it before it begins failing outright. |
-| An earlier step failed, so a later **DHIS2 Notify** step never ran | The run stopped before the notify step. The pipeline failure recipients are what still send a message. See [Notifications](/user-guide/notifications/). |
-| The **DHIS2 Notify** step itself is the failed step | **Fail the run if the message cannot be sent** is on. The message could not be sent, so the run stopped there. |
 
 ## Check
 
