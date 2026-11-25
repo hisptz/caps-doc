@@ -168,4 +168,4 @@ The schedule is removed. The pipeline and its steps stay, and you can still trig
 
 ## Next
 
-Set [input context](/user-guide/schedules/input-context/) when this schedule should use different periods or organisation units than the steps.
+Set [input context](/user-guide/schedules/input-context/) when this schedule should use different periods or organisation units than the steps. For a pipeline that runs on its own, also set failure recipients and a **DHIS2 Notify** step. See [Notifications](/user-guide/notifications/).

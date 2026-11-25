@@ -3,7 +3,7 @@ title: Read executions
 description: Find a pipeline run, read its status, and filter the list.
 sidebar:
   label: Executions
-  order: 6
+  order: 7
 ---
 
 An execution is one run of a pipeline. Every run is recorded, whether you triggered it, something called the API, or a schedule fired. Each execution keeps its own status, its step-by-step record, and its logs.

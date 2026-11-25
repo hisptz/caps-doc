@@ -37,4 +37,4 @@ Every run is an execution with its own status, a step-by-step record, and logs.
 
 1. [Open CAPS](/user-guide/interface/).
 2. [Prepare the data](/user-guide/prepare/).
-3. [Create a pipeline](/user-guide/pipelines/), then [schedule it](/user-guide/schedules/) or [read a run](/user-guide/executions/).
+3. [Create a pipeline](/user-guide/pipelines/), then [schedule it](/user-guide/schedules/), [tell people what happened](/user-guide/notifications/), or [read a run](/user-guide/executions/).
