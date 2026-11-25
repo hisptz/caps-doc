@@ -21,9 +21,9 @@ The failure notification is the message people still receive when an earlier ste
 
 ## Before you start
 
-- Every person who should receive a message has a user account on the DHIS2 instance where CAPS is running.
-- Every person who should also receive email has a correct email address on that account.
-- The user groups you will select already exist in DHIS2 and contain the right people.
+- Every person who should receive a message has to have a user account on the DHIS2 instance where CAPS is running.
+- Every person who should also receive email has to have a correct email address on that account.
+- The user groups you will select have to already exist in DHIS2 and contain the right people.
 
 ## How a message arrives
 
