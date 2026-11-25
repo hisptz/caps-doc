@@ -23,6 +23,7 @@ The failure notification is the message people still receive when an earlier ste
 
 - Every person who should receive a message has to have a user account on the DHIS2 instance where CAPS is running.
 - Every person who should also receive email has to have a correct email address on that account.
+- Every person who should receive emails or SMS has turned on message notifications in their own profile. Click the profile icon at the top right of the DHIS2 screen, click **My profile**, then **User settings**, and set **Enable message email notifications** and **Enable message SMS notifications** to **Yes**.
 - The user groups you will select have to already exist in DHIS2 and contain the right people.
 
 ## How a message arrives
@@ -32,7 +33,7 @@ CAPS sends every notification as a DHIS2 message. Open the inbox from the envelo
 A copy also goes by email when both of these are true:
 
 - The DHIS2 server is set up to send email. An administrator does that in the DHIS2 system settings, with the Simple Mail Transfer Protocol (SMTP) details.
-- The person has turned on email notifications for messages in their own DHIS2 account settings.
+- The person has set **Enable message email notifications** to **Yes**, as described in [Before you start](#before-you-start). An SMS copy uses **Enable message SMS notifications** on the same screen.
 
 If either of those is missing, the message is still in the DHIS2 inbox.
 
